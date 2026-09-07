@@ -1,0 +1,53 @@
+# Workspace-level tooling configuration.
+# Research prototype - Not for clinical use.
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = [
+  "packages/physics-core/tests",
+  "packages/geometry-core/tests",
+  "services/simulation-api/tests",
+]
+pythonpath = [
+  "packages/physics-core/src",
+  "packages/geometry-core/src",
+  "services/simulation-api/src",
+]
+addopts = "-q --strict-markers"
+filterwarnings = ["ignore::DeprecationWarning", "ignore::UserWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [".venv", "node_modules"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "ANN", "D", "SLF", "RUF"]
+ignore = [
+  "D203", "D213",   # incompatible docstring conventions
+  "ANN101", "ANN102", "ANN401",
+  "D107",           # __init__ documented on the class
+  "B008",           # FastAPI dependency defaults
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["D", "ANN", "SLF"]
+"scripts/*" = ["D", "ANN"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "packages/physics-core/src:packages/geometry-core/src:services/simulation-api/src"
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+check_untyped_defs = true
+exclude = "(^|/)(\\.venv|node_modules|tests)/"
+
+[[tool.mypy.overrides]]
+module = ["scipy.*", "trimesh.*"]
+ignore_missing_imports = true

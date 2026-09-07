@@ -1,0 +1,18 @@
+{
+  "name": "cathsim-la",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CathSim LA - research prototype for left-atrium catheter simulation. Not for clinical use.",
+  "workspaces": ["apps/*", "packages/shared-schema"],
+  "scripts": {
+    "dev": "npm run dev --workspace apps/viewer",
+    "build": "npm run build --workspace apps/viewer",
+    "preview": "npm run preview --workspace apps/viewer",
+    "test": "npm run test --workspace apps/viewer",
+    "test:e2e": "npm run test:e2e --workspace apps/viewer",
+    "lint": "npm run lint --workspace apps/viewer",
+    "typecheck": "npm run typecheck --workspace apps/viewer",
+    "schema:generate": "node scripts/generate-types.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

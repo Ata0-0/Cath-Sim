@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cathsim-la.invalid/schemas/simulation.schema.json",
+  "title": "CathSim LA simulation entities",
+  "description": "Single source of truth for the API and the viewer. Pydantic models and TypeScript interfaces are derived from this file. Research prototype - Not for clinical use.",
+  "x-schema-version": "0.1.0",
+  "$defs": {
+    "MaterialParameters": {
+      "type": "object",
+      "description": "Constitutive parameters. A null value is CALIBRATION_REQUIRED and blocks simulation.",
+      "properties": {
+        "youngs_modulus_mpa": { "type": ["number", "null"], "x-unit": "MPa" },
+        "poisson_ratio": { "type": ["number", "null"], "x-unit": "-" },
+        "bending_stiffness_n_mm2": { "type": ["number", "null"], "x-unit": "N mm^2" },
+        "torsional_stiffness_n_mm2": { "type": ["number", "null"], "x-unit": "N mm^2" },
+        "axial_stiffness_n": { "type": ["number", "null"], "x-unit": "N" },
+        "damping_n_s_per_mm": { "type": ["number", "null"], "x-unit": "N s / mm^2 (per unit length)" },
+        "torsional_damping_n_mm_s_per_rad": { "type": ["number", "null"], "x-unit": "N mm s / rad per mm" },
+        "density_kg_per_mm3": { "type": ["number", "null"], "x-unit": "kg/mm^3" }
+      },
+      "required": ["youngs_modulus_mpa", "poisson_ratio", "damping_n_s_per_mm"]
+    },
+    "CatheterParameters": {
+      "type": "object",
+      "description": "A complete catheter parameter profile.",
+      "properties": {
+        "schema_version": { "type": "string" },
+        "model_type": {
+          "type": "string",
+          "enum": [
+            "GenericSteerableRF",
+            "GenericBalloon",
+            "GenericLoop",
+            "GenericLatticeSphere",
+            "GenericPentasplinePFA"
+          ]
+        },
+        "display_name": { "type": "string" },
+        "status": { "type": "string" },
+        "is_demo_profile": { "type": "boolean" },
+        "geometry": { "type": "object" },
+        "material": { "$ref": "#/$defs/MaterialParameters" },
+        "actuation": { "type": "object" },
+        "contact": { "type": "object" },
+        "electrodes": { "type": "object" },
+        "provenance": { "type": "object" }
+      },
+      "required": ["schema_version", "model_type", "display_name", "status", "geometry", "material", "actuation", "contact", "provenance"]
+    },
+    "ActuationInput": {
+      "type": "object",
+      "description": "Normalised handle inputs. Commands carry a sequence number and a timestamp so that late-arriving commands are handled deterministically.",
+      "properties": {
+        "insertion_mm": { "type": "number", "minimum": 0, "x-unit": "mm" },
+        "axial_rotation_rad": { "type": "number", "x-unit": "rad" },
+        "steer_x": { "type": "number", "minimum": -1, "maximum": 1, "x-unit": "-" },
+        "steer_y": { "type": "number", "minimum": -1, "maximum": 1, "x-unit": "-" },
+        "deployment": { "type": "number", "minimum": 0, "maximum": 1, "x-unit": "-" },
+        "sequence": { "type": "integer", "minimum": 0 },
+        "client_timestamp_s": { "type": "number", "x-unit": "s" }
+      },
+      "required": ["insertion_mm", "axial_rotation_rad", "steer_x", "steer_y", "deployment"]
+    },
+    "SimulationSettings": {
+      "type": "object",
+      "properties": {
+        "dt_s": { "type": "number", "exclusiveMinimum": 0, "x-unit": "s" },
+        "max_iterations": { "type": "integer", "minimum": 1 },
+        "gradient_tolerance_n": { "type": "number", "exclusiveMinimum": 0, "x-unit": "N" },
+        "gravity_enabled": { "type": "boolean" },
+        "accept_demo_parameters": { "type": "boolean" }
+      },
+      "required": ["dt_s"]
+    },
+    "MeshMetadata": {
+      "type": "object",
+      "description": "Anatomy provenance and QA result. Never carries patient identifiers.",
+      "properties": {
+        "name": { "type": "string" },
+        "provenance": { "type": "string" },
+        "units": { "type": "string", "enum": ["mm", "cm", "UNKNOWN_ASK_USER"] },
+        "vertex_count": { "type": "integer", "minimum": 0 },
+        "triangle_count": { "type": "integer", "minimum": 0 },
+        "is_watertight": { "type": ["boolean", "null"] },
+        "issues": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["name", "provenance", "units", "triangle_count"]
+    },
+    "ElectrodePose": {
+      "type": "object",
+      "properties": {
+        "index": { "type": "integer", "minimum": 0 },
+        "arclength_mm": { "type": "number", "x-unit": "mm" },
+        "position_mm": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3, "x-unit": "mm" },
+        "orientation_xyzw": { "type": "array", "items": { "type": "number" }, "minItems": 4, "maxItems": 4 }
+      },
+      "required": ["index", "arclength_mm", "position_mm", "orientation_xyzw"]
+    },
+    "ContactSample": {
+      "type": "object",
+      "description": "One contact between the rod and the anatomy. Force is a NUMERICAL ESTIMATE from an uncalibrated model, not a clinical contact-force reading.",
+      "properties": {
+        "node_index": { "type": "integer", "minimum": 0 },
+        "position_mm": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3, "x-unit": "mm" },
+        "normal": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+        "penetration_mm": { "type": "number", "x-unit": "mm" },
+        "estimated_force_n": { "type": "number", "x-unit": "N" }
+      },
+      "required": ["node_index", "position_mm", "normal", "penetration_mm", "estimated_force_n"]
+    },
+    "ContactMetrics": {
+      "type": "object",
+      "properties": {
+        "available": { "type": "boolean" },
+        "reason": { "type": "string" },
+        "contact_count": { "type": "integer", "minimum": 0 },
+        "max_penetration_mm": { "type": "number", "x-unit": "mm" },
+        "total_estimated_force_n": { "type": "number", "x-unit": "N" }
+      },
+      "required": ["available", "contact_count", "max_penetration_mm"]
+    },
+    "SolverReport": {
+      "type": "object",
+      "properties": {
+        "iterations": { "type": "integer", "minimum": 0 },
+        "residual": { "type": "number", "minimum": 0, "x-unit": "N" },
+        "max_penetration_mm": { "type": "number", "x-unit": "mm" },
+        "converged": { "type": "boolean" }
+      },
+      "required": ["iterations", "residual", "max_penetration_mm", "converged"]
+    },
+    "SimulationFrame": {
+      "type": "object",
+      "properties": {
+        "time_s": { "type": "number", "x-unit": "s" },
+        "centerline_mm": {
+          "type": "array",
+          "items": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+          "x-unit": "mm"
+        },
+        "orientations_xyzw": {
+          "type": "array",
+          "items": { "type": "array", "items": { "type": "number" }, "minItems": 4, "maxItems": 4 }
+        },
+        "electrodes": { "type": "array", "items": { "$ref": "#/$defs/ElectrodePose" } },
+        "contacts": { "type": "array", "items": { "$ref": "#/$defs/ContactSample" } },
+        "solver": { "$ref": "#/$defs/SolverReport" }
+      },
+      "required": ["time_s", "centerline_mm", "orientations_xyzw", "electrodes", "contacts", "solver"]
+    },
+    "ValidationResult": {
+      "type": "object",
+      "properties": {
+        "test_id": { "type": "string" },
+        "description": { "type": "string" },
+        "measured": { "type": "number" },
+        "expected": { "type": "number" },
+        "relative_error": { "type": "number" },
+        "tolerance": { "type": "number" },
+        "passed": { "type": "boolean" },
+        "tolerance_rationale": { "type": "string" }
+      },
+      "required": ["test_id", "measured", "expected", "relative_error", "tolerance", "passed"]
+    }
+  }
+}

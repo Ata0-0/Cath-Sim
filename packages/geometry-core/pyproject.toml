@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cathsim-geometry-core"
+version = "0.1.0"
+description = "CathSim LA geometry core - mesh QA and acceleration structures (research prototype, not for clinical use)"
+requires-python = ">=3.11"
+dependencies = ["numpy>=1.26", "trimesh>=4.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

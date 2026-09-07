@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+apps/viewer/dist/
+apps/viewer/.vite/
+*.tsbuildinfo
+playwright-report/
+test-results/
+blob-report/
+
+# C++ (Milestone 3)
+cpp-build/
+CMakeCache.txt
+CMakeFiles/
+
+# Local artefacts / large binaries - never commit patient or mesh data
+*.stl
+*.obj
+*.ply
+*.vtk
+*.dcm
+!assets/demo/*.stl
+!tests/reference-data/*.stl
+*.log
+.DS_Store
+.env
+.env.local
+
+# Generated screenshots from local runs
+artifacts/

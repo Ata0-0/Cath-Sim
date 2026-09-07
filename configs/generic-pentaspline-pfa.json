@@ -1,0 +1,53 @@
+{
+  "schema_version": "0.1.0",
+  "model_type": "GenericPentasplinePFA",
+  "display_name": "Generic pentaspline PFA catheter (Milestone 4 - not implemented yet)",
+  "status": "RESEARCH_ONLY_CALIBRATION_REQUIRED",
+  "is_demo_profile": false,
+  "notes": [
+    "Placeholder profile reserving the schema for Milestone 4.",
+    "This is a GENERIC five-spline geometry, not a model of any commercial",
+    "device. The basket/flower transition must be produced mechanically by",
+    "changing rest geometry and constraints - never by morphing between two",
+    "fixed meshes.",
+    "Until bench data exists this model is a KINEMATIC-MECHANICAL HYBRID,",
+    "CALIBRATION REQUIRED."
+  ],
+  "geometry": {
+    "total_length_mm": 1100.0,
+    "working_length_mm": 140.0,
+    "shaft_outer_diameter_mm": 2.7,
+    "node_spacing_mm": 2.0,
+    "spline_count": 5,
+    "spline_length_mm": null,
+    "spline_diameter_mm": null,
+    "basket_max_diameter_mm": null,
+    "flower_max_diameter_mm": null
+  },
+  "material": {
+    "spline_youngs_modulus_mpa": null,
+    "spline_poisson_ratio": null,
+    "damping_n_s_per_mm": null
+  },
+  "actuation": {
+    "deployment_range": [0.0, 1.0],
+    "deployment_to_rest_curvature_per_mm": null,
+    "max_steering_input": 1.0
+  },
+  "contact": {
+    "friction_coefficient": null,
+    "compliance_mm_per_n": null,
+    "spline_collision_radius_mm": null
+  },
+  "electrodes": {
+    "per_spline_count": null,
+    "arclength_from_spline_base_mm": null,
+    "source": "USER_MEASUREMENT_REQUIRED"
+  },
+  "provenance": {
+    "geometry_source": "USER_MEASUREMENT_REQUIRED",
+    "material_source": "CALIBRATION_REQUIRED",
+    "mechanism_source": "CALIBRATION_REQUIRED",
+    "last_calibrated_at": null
+  }
+}

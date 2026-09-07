@@ -1,0 +1,78 @@
+{
+  "schema_version": "0.1.0",
+  "model_type": "GenericSteerableRF",
+  "display_name": "DEMO steerable catheter (uncalibrated placeholder values)",
+  "status": "DEMO_ONLY_NOT_A_DEVICE_SPECIFICATION",
+  "is_demo_profile": true,
+  "notes": [
+    "WARNING: every material and actuation number in this file is an ARBITRARY",
+    "PLACEHOLDER chosen only so that the viewer shows plausible motion.",
+    "None of these values has been measured on a catheter. They must never be",
+    "quoted as device properties, and no result produced with this profile is",
+    "mechanically valid. Use it to exercise the software, nothing else.",
+    "Replace with bench-calibrated values (docs/validation-plan.md) before any",
+    "quantitative claim.",
+    "",
+    "How the damping numbers were picked (so they are reproducible rather than",
+    "invented): the over-damped rod relaxes with time constant tau = c_total/k.",
+    "Targeting tau = 0.5 s at the nominal deployed length L = 110.0 mm gives",
+    "c = tau * (3 EI / L^3) / L = 1.77e-05 N s / mm^2 and",
+    "c_torsion = tau * (GJ / L) / L = 0.0509 N mm s / rad per mm.",
+    "They set how fast the demo settles; they are NOT measured catheter damping."
+  ],
+  "geometry": {
+    "total_length_mm": 1100.0,
+    "working_length_mm": 140.0,
+    "outer_diameter_mm": 2.5,
+    "tip_length_mm": 3.5,
+    "active_length_mm": 70.0,
+    "node_spacing_mm": 2.0
+  },
+  "material": {
+    "youngs_modulus_mpa": 900.0,
+    "poisson_ratio": 0.4,
+    "bending_stiffness_n_mm2": null,
+    "torsional_stiffness_n_mm2": null,
+    "axial_stiffness_n": null,
+    "damping_n_s_per_mm": 1.77e-05,
+    "torsional_damping_n_mm_s_per_rad": 0.0509,
+    "density_kg_per_mm3": 1.2e-06
+  },
+  "actuation": {
+    "steer_gain_rad_per_mm": 0.022,
+    "max_steering_input": 1.0,
+    "bidirectional": true,
+    "hysteresis_model": "DISABLED_IN_MVP"
+  },
+  "contact": {
+    "friction_coefficient": 0.2,
+    "compliance_mm_per_n": 0.5,
+    "catheter_collision_radius_mm": 1.25
+  },
+  "electrodes": {
+    "count": 4,
+    "arclength_from_tip_mm": [
+      1.75,
+      8.0,
+      12.0,
+      16.0
+    ],
+    "length_mm": [
+      3.5,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "source": "PLACEHOLDER_NOT_MEASURED"
+  },
+  "provenance": {
+    "geometry_source": "PLACEHOLDER_NOT_MEASURED",
+    "material_source": "PLACEHOLDER_NOT_MEASURED",
+    "last_calibrated_at": null
+  },
+  "units": {
+    "youngs_modulus_mpa": "MPa (N/mm^2)",
+    "damping_n_s_per_mm": "N s / mm^2 (per unit length)",
+    "steer_gain_rad_per_mm": "rad/mm per unit steering input"
+  }
+}

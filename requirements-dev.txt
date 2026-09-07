@@ -1,0 +1,12 @@
+# Development dependencies for the Python side of CathSim LA.
+# Research prototype - Not for clinical use.
+numpy>=1.26
+scipy>=1.11
+trimesh>=4.0
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.8
+httpx>=0.27
+pytest>=8.0
+ruff>=0.6
+mypy>=1.10

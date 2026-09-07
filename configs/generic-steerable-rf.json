@@ -1,0 +1,73 @@
+{
+  "schema_version": "0.1.0",
+  "model_type": "GenericSteerableRF",
+  "display_name": "Generic steerable RF catheter",
+  "status": "RESEARCH_ONLY_CALIBRATION_REQUIRED",
+  "is_demo_profile": false,
+  "notes": [
+    "This profile describes a GENERIC bidirectional steerable ablation catheter.",
+    "It is not a model of any specific commercial device.",
+    "Geometric similarity does not imply mechanical accuracy.",
+    "Every null value below is CALIBRATION_REQUIRED and blocks simulation."
+  ],
+  "geometry": {
+    "total_length_mm": 1100.0,
+    "working_length_mm": 140.0,
+    "outer_diameter_mm": 2.5,
+    "tip_length_mm": 3.5,
+    "active_length_mm": 70.0,
+    "node_spacing_mm": 2.0
+  },
+  "material": {
+    "youngs_modulus_mpa": null,
+    "poisson_ratio": null,
+    "bending_stiffness_n_mm2": null,
+    "torsional_stiffness_n_mm2": null,
+    "axial_stiffness_n": null,
+    "damping_n_s_per_mm": null,
+    "torsional_damping_n_mm_s_per_rad": null,
+    "density_kg_per_mm3": null
+  },
+  "actuation": {
+    "steer_gain_rad_per_mm": null,
+    "max_steering_input": 1.0,
+    "bidirectional": true,
+    "hysteresis_model": "DISABLED_IN_MVP"
+  },
+  "contact": {
+    "friction_coefficient": null,
+    "compliance_mm_per_n": null,
+    "catheter_collision_radius_mm": 1.25
+  },
+  "electrodes": {
+    "count": 4,
+    "arclength_from_tip_mm": [1.75, 8.0, 12.0, 16.0],
+    "length_mm": [3.5, 1.0, 1.0, 1.0],
+    "source": "USER_MEASUREMENT_REQUIRED"
+  },
+  "provenance": {
+    "geometry_source": "USER_MEASUREMENT_REQUIRED",
+    "material_source": "CALIBRATION_REQUIRED",
+    "last_calibrated_at": null
+  },
+  "units": {
+    "total_length_mm": "mm",
+    "working_length_mm": "mm",
+    "outer_diameter_mm": "mm",
+    "tip_length_mm": "mm",
+    "active_length_mm": "mm",
+    "node_spacing_mm": "mm",
+    "youngs_modulus_mpa": "MPa (N/mm^2)",
+    "poisson_ratio": "-",
+    "bending_stiffness_n_mm2": "N mm^2 (EI)",
+    "torsional_stiffness_n_mm2": "N mm^2 (GJ)",
+    "axial_stiffness_n": "N (EA)",
+    "damping_n_s_per_mm": "N s / mm^2 (per unit length; key name fixed by contract)",
+    "torsional_damping_n_mm_s_per_rad": "N mm s / rad per unit length",
+    "density_kg_per_mm3": "kg/mm^3",
+    "steer_gain_rad_per_mm": "rad/mm per unit steering input (= rest curvature gain)",
+    "friction_coefficient": "-",
+    "compliance_mm_per_n": "mm/N",
+    "catheter_collision_radius_mm": "mm"
+  }
+}

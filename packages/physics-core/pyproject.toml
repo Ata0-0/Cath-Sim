@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cathsim-physics-core"
+version = "0.1.0"
+description = "CathSim LA physics core - discrete elastic rod reference solver (research prototype, not for clinical use)"
+requires-python = ">=3.11"
+dependencies = ["numpy>=1.26", "scipy>=1.11"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6", "mypy>=1.10"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
