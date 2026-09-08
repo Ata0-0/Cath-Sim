@@ -170,6 +170,16 @@ tests/reference-data/  golden data shared by both solver implementations
 scripts/          reference-data and type generation
 ```
 
+## Catheter display models (Blender)
+
+`scripts/blender/generic_steerable_rf_blender.py` builds an illustrative,
+class-level 3D model of the `GenericSteerableRF` catheter - `.blend` with three
+deflection poses, plus `.glb` / `.obj` / `.stl` and preview renders - from the
+same parameter profile the physics core uses. It runs inside Blender or with
+the `bpy` wheel. Provenance and the placeholder list are in
+[`assets/demo/catheters/README.md`](assets/demo/catheters/README.md); it is
+not a model of any specific commercial device.
+
 ## Documentation
 
 | Document | What it covers |
