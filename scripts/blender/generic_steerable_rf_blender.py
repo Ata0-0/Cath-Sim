@@ -129,6 +129,7 @@ D = {
     "anchor_inner_radius_mm": 0.62,
     "pull_wire_radius_mm": 0.12,
     "pull_wire_offset_mm": 0.72,
+    "handle_wire_radius_mm": 0.2,  # display only: thicker so the cam wrap reads
     "lead_bundle_radius_mm": 0.18,
     "lead_bundle_offset_mm": 0.5,
     "hollow_s_mm": (3.5, 45.0),
@@ -1028,7 +1029,7 @@ def build_handle(mats, col) -> tuple[list, dict]:
         pts.insert(3, Vector((cam_x + cr + 6.0, 0.0, sign * 2.6)))
         objects.append(
             make_object(
-                name, sweep_polyline(pts, D["pull_wire_radius_mm"], 8), mats["steel_dark"], col
+                name, sweep_polyline(pts, D["handle_wire_radius_mm"], 8), mats["steel_dark"], col
             )
         )
     # electrode leads and irrigation lumen continue through the handle
@@ -1187,8 +1188,8 @@ VIEWS = {
         100.0,
         Vector((-0.3, -1.0, 0.55)),
     ),
-    "handle": (lambda _line: Vector((-100.0, 0.0, 0.0)), 520.0, 50.0, Vector((0.35, -1.0, 0.45))),
-    "mechanism": (lambda _line: Vector((-58.0, 0.0, 0.0)), 150.0, 85.0, Vector((0.25, -1.0, 0.5))),
+    "handle": (lambda _line: Vector((-100.0, 0.0, 0.0)), 400.0, 50.0, Vector((0.35, -1.0, 0.45))),
+    "mechanism": (lambda _line: Vector((-58.0, 0.0, 0.0)), 150.0, 85.0, Vector((0.25, -1.0, 0.7))),
 }
 
 
