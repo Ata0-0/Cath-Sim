@@ -139,12 +139,13 @@ D = {
     "strain_relief_len_mm": 32.0,
     "strain_relief_end_radius_mm": 2.6,
     "nose_len_mm": 12.0,
-    "knob_x_mm": (-62.0, -48.0),
+    "knob_x_mm": (-62.0, -48.0),  # (proximal, distal)
     "knob_radius_mm": 12.5,
     "knob_ridges": 24,
-    "tension_x_mm": (-66.5, -62.5),
+    "knob_bore_radius_mm": 7.6,
+    "tension_x_mm": (-66.5, -62.5),  # (proximal, distal)
     "tension_radius_mm": 10.6,
-    "body_x_mm": (-152.0, -67.0),
+    "body_x_mm": (-67.0, -152.0),  # (distal end, proximal end) - the body code reads it that way
     "body_radius_mm": 11.0,
     "shell_thickness_mm": 1.6,
     "cam_x_mm": -55.0,
@@ -288,18 +289,25 @@ def polyline_frames(points: list[Vector]) -> list[Frame]:
 Mesh = tuple[list[tuple[float, float, float]], list[tuple[int, ...]]]
 
 
-def _travel_opposes_tangent(frames: list[Frame]) -> bool:
-    """True when the frames are listed against their own tangent direction.
+def _needs_flip(frames: list[Frame]) -> bool:
+    """True when a sweep along ``frames`` would come out inside-out.
 
-    A revolve profile may be given from proximal to distal; sweeping it with
-    +X tangents then produces an inside-out solid.  Renders hide that, EXACT
-    booleans do not: they return empty or unchanged meshes.  Callers flip the
-    face winding when this is true so every swept solid faces outward.
+    A swept solid faces outward only when the frame handedness and the travel
+    direction agree: ``(n x b) . t`` is +1 for a right-handed frame, and the
+    travel sign is ``sign((last - first) . t)``.  Their product is -1 for an
+    inside-out result.  Centreline frames are right-handed and travel +t;
+    ``axis_frame`` is left-handed and the handle profiles mostly travel -X, so
+    both are fine as written - but a left-handed frame travelling +t, or a
+    right-handed one travelling -t, must be flipped.  Renders hide an inverted
+    solid; EXACT booleans do not (they return empty or unchanged meshes), which
+    is how this was found.
     """
     if len(frames) < 2:
         return False
-    travel = frames[-1][0] - frames[0][0]
-    return travel.dot(frames[0][1]) < 0.0
+    _pos, tan, nrm, bin_ = frames[0]
+    handed = nrm.cross(bin_).dot(tan)
+    travel = (frames[-1][0] - frames[0][0]).dot(tan)
+    return handed * travel < 0.0
 
 
 def _flip(faces: list[tuple[int, ...]]) -> list[tuple[int, ...]]:
@@ -346,13 +354,22 @@ def sweep(
         faces.append(tuple(reversed(rings[0])))
     if cap_end and isinstance(rings[-1], list):
         faces.append(tuple(rings[-1]))
-    if _travel_opposes_tangent(frames):
+    if _needs_flip(frames):
         faces = _flip(faces)
     return verts, faces
 
 
 def sweep_polygon(frames: list[Frame], polygon_uv: list[tuple[float, float]]) -> Mesh:
     """Sweep a convex 2-D polygon (in normal/binormal coordinates) along frames."""
+    # Normalise the winding to counter-clockwise in the (normal, binormal) plane
+    # so the result matches sweep()'s ring convention and _needs_flip() applies
+    # identically; a clockwise polygon would otherwise sweep an inside-out solid
+    # that EXACT booleans silently ignore.
+    signed_area = sum(
+        u0 * v1 - u1 * v0 for (u0, v0), (u1, v1) in itertools.pairwise([*polygon_uv, polygon_uv[0]])
+    )
+    if signed_area < 0.0:
+        polygon_uv = list(reversed(polygon_uv))
     verts: list[tuple[float, float, float]] = []
     faces: list[tuple[int, ...]] = []
     m = len(polygon_uv)
@@ -368,7 +385,7 @@ def sweep_polygon(frames: list[Frame], polygon_uv: list[tuple[float, float]]) ->
     faces.append(tuple(reversed(range(m))))
     last = (len(frames) - 1) * m
     faces.append(tuple(range(last, last + m)))
-    if _travel_opposes_tangent(frames):
+    if _needs_flip(frames):
         faces = _flip(faces)
     return verts, faces
 
@@ -832,8 +849,27 @@ def build_handle(mats, col) -> tuple[list, dict]:
     knob = make_object(
         "DeflectionKnob", revolve(prof, 2 * ridges * 2, modulation=knurl), mats["knob"], col
     )
+    bore_r = D["knob_bore_radius_mm"]
+    bore = make_object(
+        "KnobBore",
+        revolve([(kx1 + 1.0, bore_r), (kx0 - 1.0, bore_r)], 32),
+        mats["knob"],
+        col,
+        smooth=False,
+    )
+    apply_booleans(knob, [bore])
     named["knob"] = knob
     objects.append(knob)
+    # hub: couples the knob collar to the cam shaft
+    hub_x = (kx0 + kx1) / 2.0 + 3.0
+    objects.append(
+        make_object(
+            "KnobHub",
+            revolve([(hub_x + 1.0, bore_r + 0.05), (hub_x - 1.0, bore_r + 0.05)], 32),
+            mats["steel_light"],
+            col,
+        )
+    )
 
     # tension / friction adjustment ring
     tx0, tx1 = D["tension_x_mm"]
@@ -842,6 +878,14 @@ def build_handle(mats, col) -> tuple[list, dict]:
     tension = make_object(
         "TensionRing", revolve(prof, 2 * ridges * 2, modulation=knurl), mats["steel_light"], col
     )
+    bore = make_object(
+        "TensionBore",
+        revolve([(tx1 + 1.0, bore_r), (tx0 - 1.0, bore_r)], 32),
+        mats["knob"],
+        col,
+        smooth=False,
+    )
+    apply_booleans(tension, [bore])
     named["tension"] = tension
     objects.append(tension)
 
