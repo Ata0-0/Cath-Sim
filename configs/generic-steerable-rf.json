@@ -8,15 +8,17 @@
     "This profile describes a GENERIC bidirectional steerable ablation catheter.",
     "It is not a model of any specific commercial device.",
     "Geometric similarity does not imply mechanical accuracy.",
-    "Every null value below is CALIBRATION_REQUIRED and blocks simulation."
+    "Every null value below is CALIBRATION_REQUIRED and blocks simulation.",
+    "2026-09-09: outer dimensions updated from a public manufacturer table supplied by the project owner (8 F, 3.5 mm tip, 6 electrodes, 115 cm). The project proposal PDF states 7.5 Fr / 4 electrodes for the same device class - that discrepancy must be resolved in the proposal."
   ],
   "geometry": {
-    "total_length_mm": 1100.0,
+    "total_length_mm": 1150.0,
     "working_length_mm": 140.0,
-    "outer_diameter_mm": 2.5,
+    "outer_diameter_mm": 2.667,
     "tip_length_mm": 3.5,
     "active_length_mm": 70.0,
-    "node_spacing_mm": 2.0
+    "node_spacing_mm": 2.0,
+    "size_french": 8.0
   },
   "material": {
     "youngs_modulus_mpa": null,
@@ -37,18 +39,34 @@
   "contact": {
     "friction_coefficient": null,
     "compliance_mm_per_n": null,
-    "catheter_collision_radius_mm": 1.25
+    "catheter_collision_radius_mm": 1.333
   },
   "electrodes": {
-    "count": 4,
-    "arclength_from_tip_mm": [1.75, 8.0, 12.0, 16.0],
-    "length_mm": [3.5, 1.0, 1.0, 1.0],
-    "source": "USER_MEASUREMENT_REQUIRED"
+    "count": 6,
+    "arclength_from_tip_mm": [
+      1.75,
+      4.5,
+      6.0,
+      7.5,
+      10.5,
+      12.0
+    ],
+    "length_mm": [
+      3.5,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "source": "count: PUBLIC_MANUFACTURER_TABLE_USER_SUPPLIED; spacing: ESTIMATED_FROM_PRODUCT_PHOTO (+/-0.5 mm, ring widths not resolvable) - USER_MEASUREMENT_REQUIRED",
+    "layout_note": "Tip electrode, then a cluster of three ring electrodes, a gap, then two ring electrodes. Centres from the tip apex, scaled to the 3.5 mm tip electrode in the photo."
   },
   "provenance": {
-    "geometry_source": "USER_MEASUREMENT_REQUIRED",
+    "geometry_source": "size (8 F), tip length (3.5 mm), electrode count (6), length (115 cm): public manufacturer product table supplied by the project owner on 2026-09-09; electrode spacing and port layout: ESTIMATED_FROM_PRODUCT_PHOTO; active/deflectable length: not in the table (class-level placeholder)",
     "material_source": "CALIBRATION_REQUIRED",
-    "last_calibrated_at": null
+    "last_calibrated_at": null,
+    "geometry_note": "Geometric similarity is not mechanical accuracy. Still not a model of any specific commercial device: no mechanical value has been measured."
   },
   "units": {
     "total_length_mm": "mm",
@@ -68,6 +86,14 @@
     "steer_gain_rad_per_mm": "rad/mm per unit steering input (= rest curvature gain)",
     "friction_coefficient": "-",
     "compliance_mm_per_n": "mm/N",
-    "catheter_collision_radius_mm": "mm"
+    "catheter_collision_radius_mm": "mm",
+    "size_french": "F (1 F = 1/3 mm)",
+    "port_diameter_mm": "mm"
+  },
+  "irrigation": {
+    "port_rows_around": 8,
+    "ports_per_row": 6,
+    "port_diameter_mm": 0.2,
+    "source": "ESTIMATED_FROM_PRODUCT_PHOTO (rows of small ports over the tip cylinder and dome) - USER_MEASUREMENT_REQUIRED"
   }
 }

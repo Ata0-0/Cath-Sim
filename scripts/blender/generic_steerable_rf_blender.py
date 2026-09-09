@@ -8,10 +8,10 @@ What this is
 An ILLUSTRATIVE, class-level 3D model of a generic irrigated, contact-force
 sensing, point-tip steerable RF ablation catheter, as a cutaway:
 
-* distal assembly - 3.5 mm tip electrode with irrigation ports, magnetic
+* distal assembly - 3.5 mm tip electrode with rows of irrigation ports, magnetic
   transmitter coil, precision spring (the flexure that lets the tip electrode
   deflect slightly for contact-force sensing), three location-sensor coils,
-  pull-wire anchor ring, three ring electrodes, irrigation lumen and
+  pull-wire anchor ring, five ring electrodes, irrigation lumen and
   electrode-lead bundle;
 * deflectable shaft with two pull wires (bidirectional steering);
 * handle - strain relief, rotary deflection knob driving a cam that tensions
@@ -21,7 +21,9 @@ sensing, point-tip steerable RF ablation catheter, as a cutaway:
 The *arrangement* of the distal components (tip -> transmitter coil ->
 precision spring -> location sensors) follows published cutaway illustrations
 of this catheter class.  Every internal and handle dimension is a DISPLAY
-PLACEHOLDER; outer geometry comes from ``configs/generic-steerable-rf.json``.
+PLACEHOLDER; outer geometry comes from ``configs/generic-steerable-rf.json``
+(8 F, 3.5 mm tip, six electrodes, 115 cm from a public product table; ring spacing
+and port layout ESTIMATED_FROM_PRODUCT_PHOTO, +/-0.5 mm).
 
 What this is NOT
 ----------------
@@ -80,15 +82,15 @@ PROVENANCE = (
 #: Embedded copy of the profile geometry, used only outside the repository.
 EMBEDDED_PROFILE = {
     "geometry": {
-        "total_length_mm": 1100.0,
-        "outer_diameter_mm": 2.5,
+        "total_length_mm": 1150.0,
+        "outer_diameter_mm": 2.667,
         "tip_length_mm": 3.5,
         "active_length_mm": 70.0,
     },
     "electrodes": {
-        "count": 4,
-        "arclength_from_tip_mm": [1.75, 8.0, 12.0, 16.0],
-        "length_mm": [3.5, 1.0, 1.0, 1.0],
+        "count": 6,
+        "arclength_from_tip_mm": [1.75, 4.5, 6.0, 7.5, 10.5, 12.0],
+        "length_mm": [3.5, 1.0, 1.0, 1.0, 1.0, 1.0],
         "source": "USER_MEASUREMENT_REQUIRED",
     },
 }
@@ -97,10 +99,10 @@ EMBEDDED_PROFILE = {
 D = {
     # outer
     "ring_outer_diameter_mm": 2.6,
-    "irrigation_port_count": 6,
-    "irrigation_port_diameter_mm": 0.35,
-    "irrigation_port_depth_mm": 0.6,
-    "irrigation_port_latitude_deg": 40.0,
+    "irrigation_port_rows_around": 8,
+    "irrigation_ports_per_row": 6,
+    "irrigation_port_diameter_mm": 0.2,
+    "irrigation_port_depth_mm": 0.45,
     "segments_around": 32,
     "sample_mm_bend": 0.5,
     "sample_mm_straight": 5.0,
@@ -555,22 +557,35 @@ def build_distal_outer(line: Centreline, profile: dict, mats, col) -> tuple[list
         mats["electrode"],
         col,
     )
-    # irrigation ports cut into the dome
-    centre = base[0] + base[1] * straight
-    lat = math.radians(D["irrigation_port_latitude_deg"])
+    # irrigation ports: axial rows of small ports over the tip cylinder and dome
+    # (layout ESTIMATED_FROM_PRODUCT_PHOTO via the profile's "irrigation" block)
+    irrigation = profile.get("irrigation", {})
+    rows_around = int(irrigation.get("port_rows_around", D["irrigation_port_rows_around"]))
+    per_row = int(irrigation.get("ports_per_row", D["irrigation_ports_per_row"]))
+    port_r = float(irrigation.get("port_diameter_mm", D["irrigation_port_diameter_mm"])) / 2.0
+    depth = D["irrigation_port_depth_mm"]
+    centre = base[0] + base[1] * straight  # dome centre
     port_meshes = []
-    for k in range(D["irrigation_port_count"]):
-        az = 2.0 * math.pi * k / D["irrigation_port_count"]
-        radial = (
-            (base[2] * math.cos(az) + base[3] * math.sin(az)) * math.cos(lat)
-            + base[1] * math.sin(lat)
-        ).normalized()
-        u = radial.cross(base[1] if abs(radial.dot(base[1])) < 0.9 else base[2]).normalized()
-        v = radial.cross(u).normalized()
-        inner = centre + radial * (dome_r - D["irrigation_port_depth_mm"])
-        outer = centre + radial * (dome_r + 0.3)
-        r = D["irrigation_port_diameter_mm"] / 2.0
-        port_meshes.append(sweep([(inner, radial, u, v), (outer, radial, u, v)], [r, r], 12))
+    for k in range(rows_around):
+        az = 2.0 * math.pi * k / rows_around + (math.pi / rows_around) * (k % 2)
+        radial_side = (base[2] * math.cos(az) + base[3] * math.sin(az)).normalized()
+        n_dome = 2 if per_row >= 4 else 1
+        n_cyl = max(per_row - n_dome, 1)
+        stations = []
+        for j in range(n_cyl):  # on the cylinder: (position along the axis, radial direction)
+            t = 0.45 + (straight - 0.75) * j / max(n_cyl - 1, 1)
+            stations.append((base[0] + base[1] * t + radial_side * (dome_r - depth), radial_side))
+        for j in range(n_dome):  # on the dome
+            lat = math.radians(22.0 + 30.0 * j)
+            radial = (radial_side * math.cos(lat) + base[1] * math.sin(lat)).normalized()
+            stations.append((centre + radial * (dome_r - depth), radial))
+        for inner, radial in stations:
+            u = radial.cross(base[1] if abs(radial.dot(base[1])) < 0.9 else base[2]).normalized()
+            v = radial.cross(u).normalized()
+            outer = inner + radial * (depth + 0.3)
+            port_meshes.append(
+                sweep([(inner, radial, u, v), (outer, radial, u, v)], [port_r, port_r], 10)
+            )
     cutter = make_object("PortCutter", merge(port_meshes), mats["electrode"], col, smooth=False)
     apply_booleans(tip, [cutter])
     named["tip"] = tip

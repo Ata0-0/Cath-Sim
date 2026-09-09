@@ -173,7 +173,9 @@ scripts/          reference-data and type generation
 ## Catheter display models (Blender)
 
 `scripts/blender/generic_steerable_rf_blender.py` builds an illustrative,
-class-level 3D model of the `GenericSteerableRF` catheter - `.blend` with three
+class-level cutaway model of the `GenericSteerableRF` catheter (distal
+assembly with transmitter coil, precision spring and location sensors, six
+electrodes, steering pull wires, handle with cam mechanism) - `.blend` with three
 deflection poses, plus `.glb` / `.obj` / `.stl` and preview renders - from the
 same parameter profile the physics core uses. It runs inside Blender or with
 the `bpy` wheel. Provenance and the placeholder list are in

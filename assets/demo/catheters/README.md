@@ -17,9 +17,9 @@ RF ablation catheter. Objects, from the tip:
 
 | Region | Objects | Status |
 | --- | --- | --- |
-| Tip | `TipElectrode` (3.5 mm, hemispherical dome, 6 irrigation ports cut as recesses) | length / OD from the profile; port count and layout **placeholder** |
+| Tip | `TipElectrode` (3.5 mm, hemispherical dome, rows of irrigation ports cut as recesses: 8 rows x 6) | length / OD from the product table; port rows and count **estimated from a product photo** |
 | Distal assembly | `TransmitterCoilCore`, `TransmitterCoil` (copper winding) → `PrecisionSpring` with two `SpringCollar_*` → `LocationSensor_1..3` on `LocationSensorCore_*` (tilted, 120° apart) → `PullWireAnchor` | **arrangement** follows published cutaway illustrations of this catheter class; every dimension **placeholder** |
-| Electrodes | `RingElectrode_1..3` at 8 / 12 / 16 mm from the apex (`arclength_from_tip_mm` custom property) | positions from the profile (`USER_MEASUREMENT_REQUIRED`) |
+| Electrodes | `RingElectrode_1..5` at 4.5 / 6.0 / 7.5 / 10.5 / 12.0 mm from the apex - a cluster of three, a gap, then two (`arclength_from_tip_mm` custom property) | count from the product table; spacing **estimated from a product photo, +/-0.5 mm**, ring widths not resolvable (`USER_MEASUREMENT_REQUIRED`) |
 | Shaft | `Shaft` (closed) and `Shaft_Cutaway` (hollow tube with a sector window over the distal 4-30 mm); `IrrigationLumen`, `ElectrodeLeadBundle`, `PullWire_Up` / `PullWire_Down` in the bend plane | OD from the profile; wall, lumen and wire sizes **placeholder** |
 | Handle | `StrainRelief`, `HandleNose`, `Neck`, `DeflectionKnob` (knurled rotary collar), `TensionRing`, `HandleBody` (ergonomic capsule), `Connector`, `ConnectorKey`, `Cable`, `IrrigationLine`, `IrrigationLuer` | **entirely placeholder** - a generic bidirectional handle |
 | Handle mechanism | `CamShaft` from the knob to `DeflectionCam`; `PullWire_Up_Handle` / `PullWire_Down_Handle` run from the shaft, wrap ~110° around the cam and end at `CamPin_Up` / `CamPin_Down`; `ElectrodeLeadBundle_Handle`, `IrrigationLumen_Handle` | generic pull-wire-on-cam mechanism typical of the class; **placeholder** |
@@ -32,10 +32,13 @@ hidden (`--no-cutaway` swaps them). Every object carries `provenance`,
 
 ## Provenance - read before using any of these in a document
 
-* Outer dimensions come from `configs/generic-steerable-rf.json`: 7.5 F shaft
-  (2.5 mm), 3.5 mm tip electrode, 70 mm deflectable section, 4 electrodes.
-  Those are **class-level** numbers for irrigated point-tip steerable RF
-  ablation catheters as a device category.
+* Outer dimensions come from `configs/generic-steerable-rf.json`: 8 F shaft
+  (2.667 mm), 3.5 mm tip electrode, 115 cm length, 6 electrodes - taken from a
+  public manufacturer product table supplied by the project owner (2026-09-09).
+  The 70 mm deflectable section is not in that table and stays a class-level
+  placeholder. Ring spacing and irrigation-port layout were **estimated from a
+  product photo** (scaled to the 3.5 mm tip, about +/-0.5 mm) - an estimate,
+  not a measurement.
 * The internal *arrangement* (tip electrode → transmitter coil → precision
   spring → three location sensors, irrigation lumen, two pull wires) is the
   published architecture of contact-force point-tip catheters as a class. **No
