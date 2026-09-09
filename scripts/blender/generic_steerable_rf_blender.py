@@ -98,7 +98,7 @@ EMBEDDED_PROFILE = {
 #: Display placeholders. Arclengths ``s_*`` are measured from the tip apex.
 D = {
     # outer
-    "ring_outer_diameter_mm": 2.6,
+    "ring_proud_mm": 0.06,  # display only: rings stand this much proud of the shaft
     "irrigation_port_rows_around": 8,
     "irrigation_ports_per_row": 6,
     "irrigation_port_diameter_mm": 0.2,
@@ -592,7 +592,7 @@ def build_distal_outer(line: Centreline, profile: dict, mats, col) -> tuple[list
     objects.append(tip)
 
     # ring electrodes
-    ring_r = D["ring_outer_diameter_mm"] / 2.0
+    ring_r = outer_r + D["ring_proud_mm"]
     offsets = profile["electrodes"]["arclength_from_tip_mm"]
     lengths = profile["electrodes"].get("length_mm", [tip_len] + [1.0] * (len(offsets) - 1))
     rings = []
